@@ -27,16 +27,25 @@ namespace DataTranfer
 
             try
             {
+                string dateString = "10/23/2023"; 
+                DateTime date = DateTime.ParseExact(dateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
 
-               
                 Worksheet sourceSheet =  workbook.Worksheets["2023"];
                 Worksheet targetSouth = targetworkbook.Worksheets["South 23"];
                 Worksheet targetNorth = targetworkbook.Worksheets["North 23"];
+                int southLastRow = targetSouth.Cells[targetSouth.Rows.Count, 2].End[Excel.XlDirection.xlUp].Row + 1;
+                int northLastRow = targetNorth.Cells[targetNorth.Rows.Count, 2].End[Excel.XlDirection.xlUp].Row + 1;
 
-                int lastColumn = 7;
-                int lastRow = sourceSheet.UsedRange.Rows.Count;
-                var cjSouthFilterList = new object[]
-                {
+               
+
+
+
+                var FilterDate = new object[]
+               {
+                 "10/23/2023"
+               };
+                var SouthFilterList = new object[]
+               {
                 "D01",
                 "D02",
                 "D03",
@@ -46,26 +55,31 @@ namespace DataTranfer
                 "D08",
                 "D09",
                 "D11"
-                };
+               };
+
                 Range sourceRangeSouth = sourceSheet.Range[sourceSheet.Cells[1, 1], sourceSheet.Cells[1, sourceSheet.UsedRange.Column]];
-                
-                sourceRangeSouth.AutoFilter(7, cjSouthFilterList, XlAutoFilterOperator.xlFilterValues, Type.Missing, true);
-
-                sourceSheet.UsedRange.Copy(Type.Missing);
-
-                targetSouth.Cells[3, 1].PasteSpecial(XlPasteType.xlPasteValues, XlPasteSpecialOperation.xlPasteSpecialOperationNone, Type.Missing, Type.Missing);
+                sourceRangeSouth.AutoFilter(3, FilterDate, XlAutoFilterOperator.xlFilterValues, Type.Missing, true);
+                sourceRangeSouth.AutoFilter(7, SouthFilterList, XlAutoFilterOperator.xlFilterValues, Type.Missing, true);
+                int sourceSLastRow = sourceSheet.Cells[sourceSheet.Rows.Count, 2].End[Excel.XlDirection.xlUp ].Row + 1;
+                var rangeS = sourceSheet.Range["A3:X" + sourceSLastRow];
+                rangeS.Copy(Type.Missing);
+               
+                targetSouth.Cells[southLastRow, 1].PasteSpecial(XlPasteType.xlPasteValues, XlPasteSpecialOperation.xlPasteSpecialOperationNone, Type.Missing, Type.Missing);
                 targetworkbook.Save();
 
-                var cjNorthFilterList = new object[]
+
+                var NorthFilterList = new object[]
                {
                 "CJ NORTH"
                };
                 Range sourceRangeNorth = sourceSheet.Range[sourceSheet.Cells[1, 1], sourceSheet.Cells[1, sourceSheet.UsedRange.Column]];
-                sourceRangeNorth.AutoFilter(7, cjNorthFilterList, XlAutoFilterOperator.xlFilterValues, Type.Missing, true);
+                sourceRangeNorth.AutoFilter(3, FilterDate, XlAutoFilterOperator.xlFilterValues, Type.Missing, true);
+                sourceRangeNorth.AutoFilter(7, NorthFilterList, XlAutoFilterOperator.xlFilterValues, Type.Missing, true);
+                int sourceNLastRow = sourceSheet.Cells[sourceSheet.Rows.Count, 2].End[Excel.XlDirection.xlUp].Row + 1;
+                var rangeN = sourceSheet.Range["A3:X" + sourceNLastRow];
+                rangeN.Copy(Type.Missing);
 
-                sourceSheet.UsedRange.Copy(Type.Missing);
-
-                targetNorth.Cells[3, 1].PasteSpecial(XlPasteType.xlPasteValues, XlPasteSpecialOperation.xlPasteSpecialOperationNone, Type.Missing, Type.Missing);
+                targetNorth.Cells[northLastRow, 1].PasteSpecial(XlPasteType.xlPasteValues, XlPasteSpecialOperation.xlPasteSpecialOperationNone, Type.Missing, Type.Missing);
                 targetworkbook.Save();
 
             }
